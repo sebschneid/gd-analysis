@@ -26,7 +26,7 @@ seasons = df_datasets['year'].unique()
 season_options = get_dash_dropdown_options(seasons, seasons)
 
 external_stylesheets = ["https://codepen.io/chriddyp/pen/bWLwgP.css"]
-app = dash.Dash(__name__, external_stylesheets=external_stylesheets)
+app = dash.Dash(external_stylesheets=external_stylesheets)
 
 app.layout = html.Div(children=[
     html.Div(
