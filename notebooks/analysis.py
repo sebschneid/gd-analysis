@@ -96,7 +96,7 @@ def plot_team_overview(df, competition, season, team):
     df = get_season_df(df, season)
     df = get_team_df(df, team)
     df = get_players_gd(df)
-    display(df.head())
+    # display(df.head())
 
     #df_team = df_grouped[df_grouped.index.get_level_values(0) == team]
 
