@@ -1,7 +1,7 @@
 from pathlib import Path
 import pandas as pd
 
-DATAPATH = '../data'
+DATAPATH = './data'
 
 
 def file_exists(file):

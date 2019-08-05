@@ -14,9 +14,8 @@ setuptools.setup(
     url='https://github.com/sebschneid/gd-analysis',
     packages=setuptools.find_packages(),
     package_data={
-        'pkgdata': [
+        'gd_analysis': [
             'data/df_datasets.pkl',
         ]
     },
-    # include_package_data=True,
 )

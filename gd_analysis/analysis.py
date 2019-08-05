@@ -1,5 +1,6 @@
 import plotly.graph_objects as go
-from data import get_competition_df, get_season_df, get_team_df, get_player_df
+from .data import get_competition_df, get_season_df, get_team_df, get_player_df
+
 
 def get_players_gd_methods(df, player_column='name', team_column='team', method='gd90_per_game'):
     """Summary
