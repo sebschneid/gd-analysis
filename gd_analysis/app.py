@@ -1,32 +1,35 @@
+# basic python imports
 import pandas as pd
 
-from dash.dependencies import Input, Output, State
+# dash and plotly imports
 import dash
 import dash_table
 import dash_html_components as html
 import dash_core_components as dcc
 import plotly.graph_objects as go
+from dash.dependencies import Input, Output, State
 
-from data import (
+# gd_analysis module imports
+from . import df_datasets
+from .data import (
     get_competition_df, get_season_df, get_team_df, get_player_df
 )
-from analysis import (
+from .analysis import (
     plot_season_overview,
     plot_team_overview
 )
-from helpers import get_dash_dropdown_options
+from .helpers import get_dash_dropdown_options
 
 PAGE_SIZE = 10
 VISIBLE_COLUMNS = ['competition', 'year', 'matchday', 'team', 'name', 'goal_difference', 'duration']
-#df_datasets = pd.read_pickle('./data/df_datasets.pkl')
-#df_datasets = df_datasets.dropna(subset=['goal_difference'])
-#competitions = df_datasets['competition'].unique()
-#competition_options = get_dash_dropdown_options(competitions, competitions)
-#seasons = df_datasets['year'].unique()
-#season_options = get_dash_dropdown_options(seasons, seasons)
 
-#external_stylesheets = ["https://codepen.io/chriddyp/pen/bWLwgP.css"]
-app = dash.Dash()
+competitions = df_datasets['competition'].unique()
+competition_options = get_dash_dropdown_options(competitions, competitions)
+seasons = df_datasets['year'].unique()
+season_options = get_dash_dropdown_options(seasons, seasons)
+
+external_stylesheets = ["https://codepen.io/chriddyp/pen/bWLwgP.css"]
+app = dash.Dash(external_stylesheets=external_stylesheets)
 
 app.layout = html.Div(children=[
     html.Div(
@@ -41,8 +44,8 @@ app.layout = html.Div(children=[
             sort_mode="multi",
         ),
     ),
-    #dcc.Dropdown(id='dropdown-competition', options=competition_options, value='Bundesliga'),
-    #dcc.Dropdown(id='dropdown-season', options=season_options, value='2018-19'),
+    # dcc.Dropdown(id='dropdown-competition', options=competition_options, value='Bundesliga'),
+    # dcc.Dropdown(id='dropdown-season', options=season_options, value='2018-19'),
     dcc.Dropdown(id='dropdown-team'),
     dcc.Dropdown(id='dropdown-player'),
     html.Div('C 2'),
