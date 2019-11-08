@@ -31,7 +31,8 @@ season_options = get_dash_dropdown_options(seasons, seasons)
 
 external_stylesheets = ["https://codepen.io/chriddyp/pen/bWLwgP.css"]
 app = dash.Dash(external_stylesheets=external_stylesheets)
-app._assets_url_path = 'APP/assets'
+#app._assets_url_path = 'APP/assets'
+app.css.config.serve_locally = True
 
 app.layout = html.Div(children=[
     html.Section(className="hero has-background-black", style=dict(margin=0, padding=0), children=[
