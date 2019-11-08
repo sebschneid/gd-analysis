@@ -44,16 +44,12 @@ def get_players_gd_methods(df, player_column='name', team_column='team', method=
             return df_season[['gdsum', 'duration', 'games_played']]
 
 
-def get_players_gd(df):
-    df['gd_per_minute'] = (df['goal_difference'] / df['duration'])
-    df_grouped_sum = df.groupby(['team', 'url', 'name'])['gd_per_minute', 'duration', 'goal_difference'].sum()
-    df_grouped_mean = df.groupby(['team', 'url', 'name'])['gd_per_minute', 'duration', 'goal_difference'].mean()
-    df_grouped_count = df.groupby(['team', 'url', 'name'])['goal_difference'].count()
-    df_grouped = df_grouped_sum.merge(df_grouped_mean, on=['team', 'url', 'name'], suffixes=('_sum', '_mean'))
-    df_grouped['count_appearences'] = df.groupby(['team', 'url', 'name'])['duration'].count()
-    df_grouped['gd90_mean'] = df_grouped['gd_per_minute_mean'] * 90
-    df_grouped['gd90_mean2'] =  df_grouped['goal_difference_mean'] * 90 / df_grouped['duration_mean']
-    df_grouped['games_played'] = df_grouped['duration_sum'] / 90
+def get_players_goal_differences(df):
+    df_grouped = df.groupby(['team', 'url', 'name'])['duration', 'goal_difference'].sum()
+    df_grouped['appearances'] = df.groupby(['team', 'url', 'name'])['duration'].count()
+    df_grouped['gd_total'] = df_grouped['goal_difference'] / df_grouped['duration']
+    df_grouped['gd90'] = df_grouped['gd_total'] * 90
+    df_grouped['full_games'] = df_grouped['duration'] / 90
     return df_grouped
 
 
@@ -63,55 +59,3 @@ def get_player_performance_for_matchdays(df, player_url):
     matchdays = sorted([f'{year[:4]}\n{matchday:02}' for year, matchday in df_player[['year', 'matchday']].values])
     return matchdays, goal_differences
 
-
-def plot_season_overview(df, competition, season):
-    df = get_competition_df(df, competition)
-    df = get_season_df(df, season)
-   
-    df_grouped = get_players_gd(df)
-    gd_column = 'gd90_mean2'
-    games_played = df_grouped['games_played'].values
-    gd_values = df_grouped[gd_column].values
-    teams = df_grouped.index.get_level_values(0)
-    players = df_grouped.index.get_level_values(2)
-
-    trace = go.Scatter(
-        x=gd_values,
-        y=games_played,
-        mode='markers',
-        hovertext = [f'{team}<br>{player}<br>{gd_column}={gd:.1f}<br>Games={games:.1f}' 
-                     for team, player, gd, games in zip(teams, players, gd_values, games_played)],
-        hoverinfo='text'
-    )
-    
-    data = [trace]
-
-    fig = go.Figure(data, layout=go.Layout())
-    
-    return fig
-
-
-def plot_team_overview(df, competition, season, team):
-    column = 'gd90_mean2'
-    df = get_competition_df(df, competition)
-    df = get_season_df(df, season)
-    df = get_team_df(df, team)
-    df = get_players_gd(df)
-    # display(df.head())
-
-    #df_team = df_grouped[df_grouped.index.get_level_values(0) == team]
-
-    player_names = df.index.get_level_values(2)
-
-    trace = go.Scatter(
-        x=df[column],
-        y=df['games_played'],
-        mode="markers+text",
-        name="Players",
-        text=player_names,
-        textposition="top center"
-    )
-
-    fig = go.Figure([trace], layout=go.Layout())
-
-    return fig

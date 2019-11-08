@@ -11,10 +11,11 @@ from dash.dependencies import Input, Output, State
 
 # gd_analysis module imports
 from gd_analysis import df_datasets
+
 from gd_analysis.data import (
     get_competition_df, get_season_df, get_team_df, get_player_df
 )
-from gd_analysis.analysis import (
+from gd_analysis.visualization import (
     plot_season_overview,
     plot_team_overview
 )
@@ -32,25 +33,30 @@ external_stylesheets = ["https://codepen.io/chriddyp/pen/bWLwgP.css"]
 app = dash.Dash(external_stylesheets=external_stylesheets)
 
 app.layout = html.Div(children=[
-    html.Div(
-        dash_table.DataTable(
-            id='datatable-raw',
-            columns=[{"name": column, "id": column} for column in VISIBLE_COLUMNS],
-            page_current=0,
-            page_size=PAGE_SIZE,
-            page_action='native',
-            filter_action="native",
-            sort_action="native",
-            sort_mode="multi",
-        ),
-    ),
-    dcc.Dropdown(id='dropdown-competition', options=competition_options, value='Bundesliga'),
-    dcc.Dropdown(id='dropdown-season', options=season_options, value='2018-19'),
-    dcc.Dropdown(id='dropdown-team'),
-    dcc.Dropdown(id='dropdown-player'),
-    html.Div('C 2'),
-    dcc.Graph(id='graph-season-overview'),
-    dcc.Graph(id='graph-team-overview'),
+    html.Section(className="hero is-primary", style=dict(margin=0, padding=0), children=[
+        html.Div(className="hero-body", children=[
+            html.Div(className="container", children=[
+                html.Div(
+                    dash_table.DataTable(
+                        id='datatable-raw',
+                        columns=[{"name": column, "id": column} for column in VISIBLE_COLUMNS],
+                        page_current=0,
+                        page_size=PAGE_SIZE,
+                        page_action='native',
+                        filter_action="native",
+                        sort_action="native",
+                        sort_mode="multi",
+                    ),
+                ),
+                dcc.Dropdown(id='dropdown-competition', options=competition_options, value='Bundesliga'),
+                dcc.Dropdown(id='dropdown-season', options=season_options, value='2018-19'),
+                dcc.Dropdown(id='dropdown-team'),
+                dcc.Dropdown(id='dropdown-player'),
+                dcc.Graph(id='graph-season-overview'),
+                dcc.Graph(id='graph-team-overview'),
+            ])
+        ]),
+    ]),
 ])
 
 
