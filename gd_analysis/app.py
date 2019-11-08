@@ -29,10 +29,10 @@ competition_options = get_dash_dropdown_options(competitions, competitions)
 seasons = df_datasets['year'].unique()
 season_options = get_dash_dropdown_options(seasons, seasons)
 
-external_stylesheets = ["https://codepen.io/chriddyp/pen/bWLwgP.css"]
+external_stylesheets = ["https://codepen.io/chriddyp/pen/bWLwgP.css", "https://cdn.jsdelivr.net/npm/bulma@0.8.0/css/bulma.css"]
 app = dash.Dash(external_stylesheets=external_stylesheets)
-#app._assets_url_path = 'APP/assets'
-app.css.config.serve_locally = True
+server = app.server
+
 
 app.layout = html.Div(children=[
     html.Section(className="hero has-background-black", style=dict(margin=0, padding=0), children=[
@@ -156,8 +156,6 @@ def update_dropdown_team_options(team, competition, season):
     else:
         return []
 
-
-server = app.server
 
 if __name__ == '__main__':
     app.run_server(debug=True)
