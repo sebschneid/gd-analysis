@@ -10,15 +10,15 @@ import plotly.graph_objects as go
 from dash.dependencies import Input, Output, State
 
 # gd_analysis module imports
-from . import df_datasets
-from .data import (
+from gd_analysis import df_datasets
+from gd_analysis.data import (
     get_competition_df, get_season_df, get_team_df, get_player_df
 )
-from .analysis import (
+from gd_analysis.analysis import (
     plot_season_overview,
     plot_team_overview
 )
-from .helpers import get_dash_dropdown_options
+from gd_analysis.helpers import get_dash_dropdown_options
 
 PAGE_SIZE = 10
 VISIBLE_COLUMNS = ['competition', 'year', 'matchday', 'team', 'name', 'goal_difference', 'duration']
