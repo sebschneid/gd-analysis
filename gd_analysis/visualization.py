@@ -22,8 +22,8 @@ EMPTY_LAYOUT = go.Layout(
     height=500,
     paper_bgcolor=PLOT_BACKGROUND_COLOR,
     plot_bgcolor=PLOT_BACKGROUND_COLOR,
-    xaxis={'showgrid': False},
-    yaxis={'showgrid': False},
+    xaxis={"showgrid": False},
+    yaxis={"showgrid": False},
 )
 
 
@@ -75,7 +75,7 @@ def get_scatter_for_df(
     marker_color="lightslategrey",
     line_color="white",
     marker_size=10,
-    marker_symbol="circle"
+    marker_symbol="circle",
 ):
     x_values = df[x_column].values
     y_values = df[y_column].values
@@ -91,7 +91,7 @@ def get_scatter_for_df(
             "color": marker_color,
             "size": marker_size,
             "line": {"width": 0, "color": line_color},
-            "symbol": marker_symbol
+            "symbol": marker_symbol,
         },
         hovertext=[
             f"{team}<br>{player}<br>{x_column}={x:.1f}<br>{y_column}={y:.1f}"
@@ -139,7 +139,7 @@ def scatter_players_for_season(
     data.append(trace_all)
 
     layout = get_default_layout("Season Player Overview", x_column, y_column)
-    layout.yaxis.update(rangemode='tozero')
+    layout.yaxis.update(rangemode="tozero")
 
     #  fig.update_xaxes(ticks="outside", tickwidth=2, tickcolor='crimson', ticklen=10)
     #  fig.update_yaxes(ticks="outside", tickwidth=2, tickcolor='crimson', ticklen=10, col=1)
@@ -149,7 +149,14 @@ def scatter_players_for_season(
     return fig
 
 
-def scatter_players_for_team(df, competition, season, team, x_column='gd90', y_column='appearances', min_appearances: int = 5,
+def scatter_players_for_team(
+    df,
+    competition,
+    season,
+    team,
+    x_column="gd90",
+    y_column="appearances",
+    min_appearances: int = 5,
 ):
     column = "gd90"
     df = get_competition_df(df, competition)
@@ -171,16 +178,12 @@ def scatter_players_for_team(df, competition, season, team, x_column='gd90', y_c
         name="Players",
         text=player_names,
         textposition="top center",
-        marker={
-            "color": 'mediumvioletred',
-            "size": 12,
-            "symbol": "diamond",
-        },
+        marker={"color": "mediumvioletred", "size": 12, "symbol": "diamond",},
         textfont=PLAYER_TEXT_FONT,
     )
 
     layout = get_default_layout("Team Player Overview", x_column, y_column)
-    layout.yaxis.update(rangemode='tozero')
+    layout.yaxis.update(rangemode="tozero")
 
     fig = go.Figure([trace], layout=layout)
 
@@ -188,8 +191,13 @@ def scatter_players_for_team(df, competition, season, team, x_column='gd90', y_c
 
 
 def bar_players_for_team(
-    df, competition, season, team, column='gd90', weight_column='appearances', min_appearances: int = 5,
-
+    df,
+    competition,
+    season,
+    team,
+    column="gd90",
+    weight_column="appearances",
+    min_appearances: int = 5,
 ):
     df = get_competition_df(df, competition)
     df = get_season_df(df, season)
@@ -213,7 +221,7 @@ def bar_players_for_team(
             f"<b>{player}</b><br>{column}={value:.1f}<br>{weight_column}={weight:.1f}"
             for player, value, weight in zip(players, values, width_weights)
         ],
-        marker={'color': "mediumvioletred", 'line': {'width': 0}},
+        marker={"color": "mediumvioletred", "line": {"width": 0}},
     )
 
     layout = get_default_layout("Team Player Overview", "Player", column)
@@ -223,17 +231,15 @@ def bar_players_for_team(
             x=1.0,
             y=1.15,
             xref="paper",
-            xanchor='right',
-            yanchor='middle',
+            xanchor="right",
+            yanchor="middle",
             yref="paper",
             text="Bar width corresponds to number of occurances.",
-            font=ANNOTATION_TEXT_FONT
+            font=ANNOTATION_TEXT_FONT,
         )
     ]
 
-    layout.update(
-        annotations=annotations,
-    )
+    layout.update(annotations=annotations,)
 
     data = [trace]
 

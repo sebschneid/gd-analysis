@@ -18,7 +18,12 @@ from gd_analysis.data import (
     get_team_df,
     get_player_df,
 )
-from gd_analysis.visualization import scatter_players_for_season, scatter_players_for_team, bar_players_for_team, EMPTY_LAYOUT
+from gd_analysis.visualization import (
+    scatter_players_for_season,
+    scatter_players_for_team,
+    bar_players_for_team,
+    EMPTY_LAYOUT,
+)
 from gd_analysis.helpers import get_dash_dropdown_options
 
 PAGE_SIZE = 10
@@ -44,9 +49,9 @@ external_stylesheets = [
 app = dash.Dash(external_stylesheets=external_stylesheets)
 server = app.server
 
-GRAPH_STYLE = {'width': '100%', 'marginTop': '50px'}
-DROPDOWN_STYLE = {'marginBottom': '20px'}
-COLUMN_STYLE = {'marginLeft': '0px', 'marginRight': '0px'}
+GRAPH_STYLE = {"width": "100%", "marginTop": "50px"}
+DROPDOWN_STYLE = {"marginBottom": "20px"}
+COLUMN_STYLE = {"marginLeft": "0px", "marginRight": "0px"}
 
 app.layout = html.Div(
     children=[
@@ -80,16 +85,22 @@ app.layout = html.Div(
                 html.Div(
                     className="container",
                     children=[
-                        html.H1("Raw data table", className='title is-2 has-text-black'),
-                        dcc.Markdown("""
+                        html.H1(
+                            "Raw data table",
+                            className="title is-2 has-text-black",
+                        ),
+                        dcc.Markdown(
+                            """
                             **Filter table examples**
 
                             * To find *Borussia Dortmund* in team column type either `Dort` or `="Borussia Dortmund"`.
                             * To find *Weigl* in player column type `=Weigl`.
                             * To get the second half of the Bundesligaa season type `>17` in matchdays column.
                             * To find players with negative goal differences type `<0` in goal_difference column.
+
+                            ---
                             """,
-                            style={'marginBottom': '20px'}
+                            style={"marginBottom": "20px"},
                         ),
                         html.Div(
                             dash_table.DataTable(
@@ -104,52 +115,104 @@ app.layout = html.Div(
                                 filter_action="native",
                                 sort_action="native",
                                 sort_mode="multi",
-                                style_header={'backgroundColor': 'rgb(30, 30, 30)'},
-                                style_cell={
-                                    'backgroundColor': 'rgb(50, 50, 50)',
-                                    'color': 'white'
+                                style_header={
+                                    "backgroundColor": "rgb(30, 30, 30)"
                                 },
-                                style_filter={'backgroundColor': 'rgb(200, 200, 200)',}
+                                style_cell={
+                                    "backgroundColor": "rgb(50, 50, 50)",
+                                    "color": "white",
+                                },
+                                style_filter={
+                                    "backgroundColor": "rgb(200, 200, 200)",
+                                },
                             ),
                         ),
-
                         # dropdown elements
-                        html.Div(className='container', style={'marginTop': '20px'}, children=[
-                        html.Div(className='columns', children=[
-                            # competition
-                            html.Div(className='column is-3', style=COLUMN_STYLE, children=[
-                                html.Label("Competition", className="has-text-weight-bold"),
-                                dcc.Dropdown(
-                                    id="dropdown-competition",
-                                    options=competition_options,
-                                    value="Bundesliga",
+                        html.Div(
+                            className="container",
+                            style={"marginTop": "20px"},
+                            children=[
+                                html.Div(
+                                    className="columns",
+                                    children=[
+                                        # competition
+                                        html.Div(
+                                            className="column is-3",
+                                            style=COLUMN_STYLE,
+                                            children=[
+                                                html.Label(
+                                                    "Competition",
+                                                    className="has-text-weight-bold",
+                                                ),
+                                                dcc.Dropdown(
+                                                    id="dropdown-competition",
+                                                    options=competition_options,
+                                                    value="Bundesliga",
+                                                ),
+                                            ],
+                                        ),
+                                        # season
+                                        html.Div(
+                                            className="column is-3",
+                                            style=COLUMN_STYLE,
+                                            children=[
+                                                html.Label(
+                                                    "Season",
+                                                    className="has-text-weight-bold",
+                                                ),
+                                                dcc.Dropdown(
+                                                    id="dropdown-season",
+                                                    options=season_options,
+                                                    value="2018-19",
+                                                ),
+                                            ],
+                                        ),
+                                        # team
+                                        html.Div(
+                                            className="column is-3",
+                                            style=COLUMN_STYLE,
+                                            children=[
+                                                html.Label(
+                                                    "Team",
+                                                    className="has-text-weight-bold",
+                                                ),
+                                                dcc.Dropdown(
+                                                    id="dropdown-team"
+                                                ),
+                                            ],
+                                        ),
+                                        # player
+                                        html.Div(
+                                            className="column is-3",
+                                            style=COLUMN_STYLE,
+                                            children=[
+                                                html.Label(
+                                                    "Player",
+                                                    className="has-text-weight-bold",
+                                                ),
+                                                dcc.Dropdown(
+                                                    id="dropdown-player"
+                                                ),
+                                            ],
+                                        ),
+                                    ],
                                 ),
-                            ]),
-
-                            # season
-                            html.Div(className='column is-3', style=COLUMN_STYLE, children=[
-                                html.Label("Season", className="has-text-weight-bold"),
-                                dcc.Dropdown(
-                                    id="dropdown-season",
-                                    options=season_options,
-                                    value="2018-19",
-                                ),
-                            ]),
-
-                            # team
-                            html.Div(className='column is-3', style=COLUMN_STYLE, children=[
-                                html.Label("Team", className="has-text-weight-bold"),
-                                dcc.Dropdown(id="dropdown-team"),
-                            ]),
-
-                            # player
-                            html.Div(className='column is-3', style=COLUMN_STYLE, children=[            
-                                html.Label("Player", className="has-text-weight-bold"),
-                                dcc.Dropdown(id="dropdown-player"),   
-                            ]),
-                        ]),
-                        ]),
-                        dcc.Graph(id="graph-season-overview", style=GRAPH_STYLE),
+                            ],
+                        ),
+                        dcc.Markdown(
+                            """
+                            ---
+                                                       
+                            **GD90**
+                            
+                            The `gd90` value in plots below is calculated for each player as 90 * SUM(goal difference while player is on field) / SUM(minutes played)
+                            
+                            """,
+                            style={"marginBottom": "20px"},
+                        ),
+                        dcc.Graph(
+                            id="graph-season-overview", style=GRAPH_STYLE
+                        ),
                         dcc.Graph(id="graph-team-overview", style=GRAPH_STYLE),
                         dcc.Graph(id="graph-team-bars", style=GRAPH_STYLE),
                     ],
