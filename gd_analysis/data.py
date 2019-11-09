@@ -1,7 +1,7 @@
 from pathlib import Path
 import pandas as pd
 
-DATAPATH = './data'
+DATAPATH = "./data"
 
 
 def file_exists(file):
@@ -10,7 +10,7 @@ def file_exists(file):
 
 
 def get_dataset_path(competition, season):
-    return f'{DATAPATH}/df_players_{competition}_{season}.pkl'
+    return f"{DATAPATH}/df_players_{competition}_{season}.pkl"
 
 
 def read_dataset(competition, season):
@@ -20,16 +20,16 @@ def read_dataset(competition, season):
 
 
 def get_competition_df(df, competition):
-    return df.loc[df['competition'] == competition]
+    return df.loc[df["competition"] == competition]
 
 
 def get_season_df(df, season):
-    return df.loc[df['year'] == season]
+    return df.loc[df["year"] == season]
 
 
 def get_team_df(df, team):
-    return df.loc[df['team'] == team]
+    return df.loc[df["team"] == team]
 
 
 def get_player_df(df, player_url):
-    return df.loc[df['url'] == player_url]
+    return df.loc[df["url"] == player_url]
