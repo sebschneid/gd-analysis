@@ -16,6 +16,8 @@ setuptools.setup(
     package_data={
         'gd_analysis': [
             'data/df_datasets.pkl',
+            'data/df_players.pkl',
+            'data/df_matches.pkl',
         ]
     },
 )
