@@ -10,13 +10,13 @@ import plotly.graph_objects as go
 from dash.dependencies import Input, Output, State
 
 # gd_analysis module imports
-from gd_analysis import df_datasets
+from gd_analysis import df_players, df_matches
 
 from gd_analysis.data import (
-    get_competition_df,
-    get_season_df,
-    get_team_df,
-    get_player_df,
+    filter_competition,
+    filter_season,
+    filter_team_url,
+    filter_player_url,
 )
 from gd_analysis.visualization import (
     scatter_players_for_season,
@@ -31,15 +31,15 @@ VISIBLE_COLUMNS = [
     "competition",
     "year",
     "matchday",
-    "team",
-    "name",
+    "team_name",
+    "player_name",
     "goal_difference",
     "duration",
 ]
 
-competitions = df_datasets["competition"].unique()
+competitions = df_players["competition"].unique()
 competition_options = get_dash_dropdown_options(competitions, competitions)
-seasons = df_datasets["year"].unique()
+seasons = df_players["year"].unique()
 season_options = get_dash_dropdown_options(seasons, seasons)
 
 external_stylesheets = [
@@ -233,15 +233,15 @@ app.layout = html.Div(
     ],
 )
 def update_datatable_raw(competition, season, team, player_url):
-    df = df_datasets
+    df = df_players
     if competition:
-        df = get_competition_df(df, competition)
+        df = filter_competition(df, competition)
     if season:
-        df = get_season_df(df, season)
+        df = filter_season(df, season)
     if team:
-        df = get_team_df(df, team)
+        df = filter_team_url(df, team)
     if player_url:
-        df = get_player_df(df, player_url)
+        df = filter_player_url(df, player_url)
     return df[VISIBLE_COLUMNS].to_dict("records")
 
 
@@ -256,7 +256,8 @@ def update_datatable_raw(competition, season, team, player_url):
 def show_season_scatter(competition, season, team):
     if competition and season:
         return scatter_players_for_season(
-            df_datasets,
+            df_players,
+            df_matches,
             competition,
             season,
             x_column="gd90",
@@ -275,7 +276,7 @@ def show_season_scatter(competition, season, team):
 def show_team_scatter(team, competition, season):
     if team and competition and season:
         return scatter_players_for_team(
-            df=df_datasets, team=team, competition=competition, season=season,
+            df_players=df_players, df_matches=df_matches, team=team, competition=competition, season=season,
         )
     else:
         return go.Figure([], layout=EMPTY_LAYOUT)
@@ -289,7 +290,7 @@ def show_team_scatter(team, competition, season):
 def show_team_bars(team, competition, season):
     if team and competition and season:
         return bar_players_for_team(
-            df=df_datasets, team=team, competition=competition, season=season,
+            df_players=df_players, df_matches=df_matches, team=team, competition=competition, season=season,
         )
     else:
         return go.Figure([], layout=EMPTY_LAYOUT)
@@ -301,9 +302,9 @@ def show_team_bars(team, competition, season):
 )
 def update_dropdown_team_options(season, competition):
     if season and competition:
-        df = get_competition_df(df_datasets, competition)
-        df = get_season_df(df, season)
-        teams = sorted(df["team"].unique())
+        df = filter_competition(df_players, competition)
+        df = filter_season(df, season)
+        teams = sorted(df["team_url"].unique())
         return get_dash_dropdown_options(teams, teams)
 
     else:
@@ -317,13 +318,13 @@ def update_dropdown_team_options(season, competition):
 )
 def update_dropdown_team_options(team, competition, season):
     if season and competition and team:
-        df = get_competition_df(df_datasets, competition)
-        df = get_season_df(df, season)
-        df = get_team_df(df, team)
+        df = filter_competition(df_players, competition)
+        df = filter_season(df, season)
+        df = filter_team_url(df, team)
         player_urls, player_names = (
-            df[["url", "name"]]
+            df[["player_url", "player_name"]]
             .drop_duplicates()
-            .sort_values("name")
+            .sort_values("player_name")
             .values.transpose()
         )
         return get_dash_dropdown_options(player_urls, player_names)
