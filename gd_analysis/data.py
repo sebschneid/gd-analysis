@@ -50,3 +50,7 @@ def filter_team_url(df: pd.DataFrame, team: str):
 
 def filter_player_url(df: pd.DataFrame, player_url: str):
     return df.loc[df["player_url"] == player_url]
+
+
+def filter_appearances(df: pd.DataFrame, min_appearances: int):
+    return df[df["appearances"] > min_appearances]

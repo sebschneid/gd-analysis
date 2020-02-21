@@ -1,25 +1,32 @@
 import plotly.graph_objects as go
 
-from gd_analysis.analysis import get_players_goal_differences, goal_difference_for_team
+from gd_analysis import helpers
+
+from gd_analysis.analysis import (
+    get_players_goal_differences,
+    goal_difference_for_team,
+)
 from gd_analysis.data import (
     filter_competition,
     filter_season,
     filter_team_url,
     filter_player_url,
+    filter_appearances,
 )
 
-TITLE_FONT = {"size": 40, "color": "white"}
+TITLE_FONT = {"size": 34, "color": "white"}
 LABEL_FONT = {"size": 28, "color": "white"}
 TICK_FONT = {"size": 18, "color": "white"}
 LEGEND_FONT = {"size": 20, "color": "white"}
 PLAYER_TEXT_FONT = {"size": 18, "color": "white"}
 ANNOTATION_TEXT_FONT = {"size": 18, "color": "white"}
-
+DEFAULT_HEIGHT = 500
+DEFAULT_WIDTH = 800
 PLOT_BACKGROUND_COLOR = "rgba(35, 35, 35, 1)"
 
 
 EMPTY_LAYOUT = go.Layout(
-    height=500,
+    height=DEFAULT_HEIGHT,
     paper_bgcolor=PLOT_BACKGROUND_COLOR,
     plot_bgcolor=PLOT_BACKGROUND_COLOR,
     xaxis={"showgrid": False},
@@ -27,9 +34,16 @@ EMPTY_LAYOUT = go.Layout(
 )
 
 
-def get_default_layout(title, x_axis_title, y_axis_title, height=500):
+def get_default_layout(
+    title,
+    x_axis_title,
+    y_axis_title,
+    height=DEFAULT_HEIGHT,
+    width=DEFAULT_WIDTH,
+):
     layout = go.Layout(
         height=height,
+        width=width,
         title={"text": f"<b>{title}</b>", "font": TITLE_FONT},
         paper_bgcolor=PLOT_BACKGROUND_COLOR,
         plot_bgcolor=PLOT_BACKGROUND_COLOR,
@@ -115,7 +129,7 @@ def scatter_players_for_season(
     df_players = filter_season(df_players, season)
 
     df_grouped = get_players_goal_differences(df_players)
-    df_grouped = df_grouped[df_grouped["appearances"] > min_appearances]
+    df_grouped = filter_appearances(df_grouped, min_appearances)
 
     teams = df_grouped.index.get_level_values(0)
     players = df_grouped.index.get_level_values(2)
@@ -123,11 +137,12 @@ def scatter_players_for_season(
     data = []
 
     if team is not None:
+        team_name = helpers.get_map_from_url_to_name(df_players, "team")[team]
         trace_team = get_scatter_for_df(
             df_grouped.loc[[team]],
             x_column,
             y_column,
-            name=team,
+            name=team_name,
             marker_color="mediumvioletred",
             marker_symbol="diamond",
         )
@@ -139,7 +154,7 @@ def scatter_players_for_season(
     )
     data.append(trace_all)
 
-    layout = get_default_layout("Season Player Overview", x_column, y_column)
+    layout = get_default_layout(f"{competition} {season}", x_column, y_column)
     layout.yaxis.update(rangemode="tozero")
 
     if team is not None:
@@ -152,17 +167,14 @@ def scatter_players_for_season(
         shapes = [
             go.layout.Shape(
                 type="line",
-                yref='paper',
+                yref="paper",
                 x0=team_goal_difference,
                 y0=0,
                 x1=team_goal_difference,
                 y1=1,
-                line=dict(
-                    color="mediumvioletred",
-                    width=4,
-                    dash="dash",
-                ),
-            )]
+                line=dict(color="mediumvioletred", width=4, dash="dash",),
+            )
+        ]
         layout.update(shapes=shapes)
 
     #  fig.update_xaxes(ticks="outside", tickwidth=2, tickcolor='crimson', ticklen=10)
@@ -180,15 +192,17 @@ def scatter_players_for_team(
     season,
     team,
     x_column="gd90",
-    y_column="appearances",
+    y_column="full_games",
     min_appearances: int = 5,
 ):
     column = "gd90"
     df_players = filter_competition(df_players, competition)
     df_players = filter_season(df_players, season)
     df_players = filter_team_url(df_players, team)
+    team_name = helpers.get_map_from_url_to_name(df_players, "team")[team]
+
     df_players = get_players_goal_differences(df_players)
-    df_players = df_players[df_players["appearances"] > min_appearances]
+    df_players = filter_appearances(df_players, min_appearances)
 
     # display(df.head())
 
@@ -196,7 +210,6 @@ def scatter_players_for_team(
     df_matches = filter_competition(df_matches, competition)
     df_matches = filter_season(df_matches, season)
     team_goal_difference = goal_difference_for_team(df_matches, team)
-
 
     # df_team = df_grouped[df_grouped.index.get_level_values(0) == team]
 
@@ -222,19 +235,15 @@ def scatter_players_for_team(
     shapes = [
         go.layout.Shape(
             type="line",
-            yref='paper',
+            yref="paper",
             x0=team_goal_difference,
             y0=0,
             x1=team_goal_difference,
             y1=1,
-            line=dict(
-                color="mediumvioletred",
-                width=3,
-                dash="dash",
-            ),
-        )]
-
-    layout = get_default_layout("Team Player Overview", x_column, y_column)
+            line=dict(color="mediumvioletred", width=3, dash="dash",),
+        )
+    ]
+    layout = get_default_layout(f"{team_name} {season}", x_column, y_column)
     layout.yaxis.update(rangemode="tozero")
     layout.update(shapes=shapes)
 
@@ -250,16 +259,17 @@ def bar_players_for_team(
     season,
     team,
     column="gd90",
-    weight_column="appearances",
+    weight_column="full_games",
     min_appearances: int = 5,
 ):
     df_players = filter_competition(df_players, competition)
     df_players = filter_season(df_players, season)
     df_players = filter_team_url(df_players, team)
+    team_name = helpers.get_map_from_url_to_name(df_players, "team")[team]
 
     df_players = get_players_goal_differences(df_players)
+    df_players = filter_appearances(df_players, min_appearances)
 
-    df_players = df_players[df_players["appearances"] > min_appearances]
     df_players = df_players.sort_values(column)
 
     values = df_players[column]
@@ -284,38 +294,35 @@ def bar_players_for_team(
         marker={"color": "mediumvioletred", "line": {"width": 0}},
     )
 
-    layout = get_default_layout("Team Player Overview", "Player", column)
+    layout = get_default_layout(f"{team_name} {season}", "Player", column)
     annotations = [
         go.layout.Annotation(
-            x=1.0,
-            y=1.15,
+            x=-0.1,
+            y=0.95,
             xref="paper",
-            xanchor="right",
+            xanchor="left",
             yanchor="middle",
             yref="paper",
-            text="Bar width corresponds to number of occurances.",
+            text="Bar width scaled with minutes played",
             font=ANNOTATION_TEXT_FONT,
         )
     ]
 
-    shapes = [go.layout.Shape(
-        type="line",
-        xref='paper',
-        x0=0,
-        y0=team_goal_difference,
-        x1=1,
-        y1=team_goal_difference,
-        line=dict(
-            color="mediumvioletred",
-            width=4,
-            dash="dash",
-        ),
-    )]
+    shapes = [
+        go.layout.Shape(
+            type="line",
+            xref="paper",
+            x0=0,
+            y0=team_goal_difference,
+            x1=1,
+            y1=team_goal_difference,
+            line=dict(color="mediumvioletred", width=4, dash="dash",),
+        )
+    ]
 
     layout.update(annotations=annotations, shapes=shapes)
     layout.xaxis.update(showgrid=False)
     layout.yaxis.update(showgrid=True)
-
 
     data = [trace]
 

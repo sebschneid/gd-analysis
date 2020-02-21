@@ -1,5 +1,10 @@
 import plotly.graph_objects as go
-from .data import filter_competition, filter_season, filter_team_url, filter_player_url
+from .data import (
+    filter_competition,
+    filter_season,
+    filter_team_url,
+    filter_player_url,
+)
 
 
 def goal_difference_for_team(df_matches, team_url: str) -> float:
@@ -13,19 +18,22 @@ def goal_difference_for_team(df_matches, team_url: str) -> float:
         team_away_matches["score_away"] - team_away_matches["score_home"]
     )
     count_matches = len(goal_differences_home) + len(goal_differences_away)
-    goal_difference_sum = goal_differences_home.sum() + goal_differences_away.sum()
+    goal_difference_sum = (
+        goal_differences_home.sum() + goal_differences_away.sum()
+    )
 
-    print(goal_difference_sum / count_matches)
     return goal_difference_sum / count_matches
 
 
 def get_players_goal_differences(df_player_appearances):
-    df_grouped = df_player_appearances.groupby(["team_url", "player_url", "player_name"])[
-        "duration", "goal_difference"
-    ].sum()
-    df_grouped["appearances"] = df_player_appearances.groupby(["team_url", "player_url", "player_name"])[
-        "duration"
-    ].count()
+    df_grouped = df_player_appearances.groupby(
+        ["team_url", "player_url", "player_name"]
+    )["duration", "goal_difference"].sum()
+    df_grouped["appearances"] = df_player_appearances.groupby(
+        ["team_url", "player_url", "player_name"]
+    )["duration"].count()
+
+    # gd90 = sum(goal_difference) / sum(duration) * 90
     df_grouped["gd_total"] = (
         df_grouped["goal_difference"] / df_grouped["duration"]
     )
@@ -35,7 +43,9 @@ def get_players_goal_differences(df_player_appearances):
 
 
 def get_player_performance_for_matchdays(df, player_url: str):
-    df_player = df[df["player_url"] == player_url].sort_values(["year", "matchday"])
+    df_player = df[df["player_url"] == player_url].sort_values(
+        ["year", "matchday"]
+    )
     goal_differences = df_player["goal_difference"].values
     matchdays = sorted(
         [

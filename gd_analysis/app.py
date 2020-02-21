@@ -276,7 +276,11 @@ def show_season_scatter(competition, season, team):
 def show_team_scatter(team, competition, season):
     if team and competition and season:
         return scatter_players_for_team(
-            df_players=df_players, df_matches=df_matches, team=team, competition=competition, season=season,
+            df_players=df_players,
+            df_matches=df_matches,
+            team=team,
+            competition=competition,
+            season=season,
         )
     else:
         return go.Figure([], layout=EMPTY_LAYOUT)
@@ -290,7 +294,11 @@ def show_team_scatter(team, competition, season):
 def show_team_bars(team, competition, season):
     if team and competition and season:
         return bar_players_for_team(
-            df_players=df_players, df_matches=df_matches, team=team, competition=competition, season=season,
+            df_players=df_players,
+            df_matches=df_matches,
+            team=team,
+            competition=competition,
+            season=season,
         )
     else:
         return go.Figure([], layout=EMPTY_LAYOUT)
