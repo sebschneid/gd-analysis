@@ -1,5 +1,8 @@
 mkdir -p ~/.streamlit/
 
+pip install -U .
+pip install -r requirements.txt
+
 echo "\
 [general]\n\
 email = \"your-email@domain.com\"\n\
