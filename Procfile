@@ -1,2 +1,2 @@
-web: sh setup.sh && streamlit run app.py
+web: sh setup.sh && streamlit run gd_analysis/streamlit_app.py
 
